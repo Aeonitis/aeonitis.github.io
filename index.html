@@ -1,0 +1,331 @@
+<html><head><base href="https://djigna.com" />
+  <title>Djigna: English-Tigrinya Flashcards</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    .instructions {
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .flashcard {
+      width: 300px;
+      height: 400px;
+      perspective: 1000px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .flashcard-front {
+      background-color: #ffffff;
+    }
+    .flashcard-back {
+      background-color: #e6f2ff;
+      transform: rotateY(180deg);
+    }
+    .letter {
+      font-size: 120px;
+      margin-bottom: 20px;
+    }
+    .english-letter {
+      font-size: 48px;
+      margin-top: 20px;
+    }
+    .play-button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .navigation {
+      margin-top: 20px;
+    }
+    .nav-button, .difficulty-button {
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .nav-button {
+      background-color: #008CBA;
+    }
+    .difficulty-buttons {
+      display: none;
+      margin-top: 20px;
+    }
+    .difficulty-button:nth-child(1) { background-color: #ff4d4d; }
+    .difficulty-button:nth-child(2) { background-color: #ff9933; }
+    .difficulty-button:nth-child(3) { background-color: #ffff66; color: black; }
+    .difficulty-button:nth-child(4) { background-color: #66ff66; }
+    .difficulty-button:nth-child(5) { background-color: #66ffff; color: black; }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    View a card, guess what's on the other side, flip, listen to the pronunciation (if available), rate how easy it was to remember, and move to the next card.
+  </div>
+  <div class="flashcard">
+    <div class="flashcard-inner">
+      <div class="flashcard-front">
+        <div class="letter">ሀ</div>
+      </div>
+      <div class="flashcard-back">
+        <div class="letter">ሀ</div>
+        <div id="play-button-container"></div>
+        <div class="english-letter">ha</div>
+      </div>
+    </div>
+  </div>
+  <div class="navigation">
+    <button class="nav-button" onclick="previousCard()">Previous</button>
+    <button class="nav-button" onclick="nextCard()">Next</button>
+  </div>
+  <div class="difficulty-buttons">
+    <button class="difficulty-button" onclick="rateCard(0)">Let's try again</button>
+    <button class="difficulty-button" onclick="rateCard(1)">Hard</button>
+    <button class="difficulty-button" onclick="rateCard(2)">Good</button>
+    <button class="difficulty-button" onclick="rateCard(3)">Easy</button>
+    <button class="difficulty-button" onclick="rateCard(4)">I got it!</button>
+  </div>
+
+  <script>
+    const flashcardData = [
+      "ሀ\the", "ሁ\thu", "ሂ\thi", "ሃ\thā", "ሄ\thé", "ህ\the/h", "ሆ\tho",
+      "ለ\tle", "ሉ\tlu", "ሊ\tli", "ላ\tlā", "ሌ\tlé", "ል\tle/l", "ሎ\tlo",
+      "ሐ\tḥe", "ሑ\tḥu", "ሒ\tḥi", "ሓ\tḥā", "ሔ\tḥé", "ሕ\tḥe/ḥ", "ሖ\tḥo",
+      "መ\tme", "ሙ\tmu", "ሚ\tmi", "ማ\tmā", "ሜ\tmé", "ም\tme/m", "ሞ\tmo",
+      "ሠ\tśe", "ሡ\tśu", "ሢ\tśi", "ሣ\tśā", "ሤ\tśé", "ሥ\tśe/ś", "ሦ\tśo",
+      "ረ\tre", "ሩ\tru", "ሪ\tri", "ራ\trā", "ሬ\tré", "ር\tre/r", "ሮ\tro",
+      "ሰ\tse", "ሱ\tsu", "ሲ\tsi", "ሳ\tsā", "ሴ\tsé", "ስ\tse/s", "ሶ\tso",
+      "ሸ\tše", "ሹ\tšu", "ሺ\tši", "ሻ\tšā", "ሼ\tšé", "ሽ\tše/š", "ሾ\tšo",
+      "ቀ\tqe", "ቁ\tqu", "ቂ\tqi", "ቃ\tqā", "ቄ\tqé", "ቅ\tqe/q", "ቆ\tqo",
+      "ቐ\tq̄e", "ቑ\tq̄u", "ቒ\tq̄i", "ቓ\tq̄ā", "ቔ\tq̄é", "ቕ\tq̄e/q̄", "ቖ\tq̄o",
+      "በ\tbe", "ቡ\tbu", "ቢ\tbi", "ባ\tbā", "ቤ\tbé", "ብ\tbe/b", "ቦ\tbo",
+      "ተ\tte", "ቱ\ttu", "ቲ\tti", "ታ\ttā", "ቴ\tté", "ት\tte/t", "ቶ\tto",
+      "ቸ\tče", "ቹ\tču", "ቺ\tči", "ቻ\tčā", "ቼ\tčé", "ች\tče/č", "ቾ\tčo",
+      "ኀ\the", "ኁ\thu", "ኂ\thi", "ኃ\thā", "ኄ\thé", "ኅ\the/h", "ኆ\tho",
+      "ነ\tne", "ኑ\tnu", "ኒ\tni", "ና\tnā", "ኔ\tné", "ን\tne/n", "ኖ\tno",
+      "ኘ\tñe", "ኙ\tñu", "ኚ\tñi", "ኛ\tñā", "ኜ\tñé", "ኝ\tñe/ñ", "ኞ\tño",
+      "አ\tʼe", "ኡ\tʼu", "ኢ\tʼi", "ኣ\tʼā", "ኤ\tʼé", "እ\tʼe", "ኦ\tʼo",
+      "ከ\tke", "ኩ\tku", "ኪ\tki", "ካ\tkā", "ኬ\tké", "ክ\tke/k", "ኮ\tko",
+      "ኸ\txe", "ኹ\txu", "ኺ\txi", "ኻ\txā", "ኼ\txé", "ኽ\txe/x", "ኾ\txo",
+      "ወ\twe", "ዉ\twu", "ዊ\twi", "ዋ\twā", "ዌ\twé", "ው\twe/w", "ዎ\two",
+      "ዐ\tʻe", "ዑ\tʻu", "ዒ\tʻi", "ዓ\tʻā", "ዔ\tʻé", "ዕ\tʻe", "ዖ\tʻo",
+      "ዘ\tze", "ዙ\tzu", "ዚ\tzi", "ዛ\tzā", "ዜ\tzé", "ዝ\tze/z", "ዞ\tzo",
+      "ዠ\tže", "ዡ\tžu", "ዢ\tži", "ዣ\tžā", "ዤ\tžé", "ዥ\tže/ž", "ዦ\tžo",
+      "የ\tye", "ዩ\tyu", "ዪ\tyi", "ያ\tyā", "ዬ\tyé", "ይ\tye/y", "ዮ\tyo",
+      "ደ\tde", "ዱ\tdu", "ዲ\tdi", "ዳ\tdā", "ዴ\tdé", "ድ\tde/d", "ዶ\tdo",
+      "ጀ\tǧe", "ጁ\tǧu", "ጂ\tǧi", "ጃ\tǧā", "ጄ\tǧé", "ጅ\tǧe/ǧ", "ጆ\tǧo",
+      "ገ\tge", "ጉ\tgu", "ጊ\tgi", "ጋ\tgā", "ጌ\tgé", "ግ\tge/g", "ጎ\tgo",
+      "ጠ\tṭe", "ጡ\tṭu", "ጢ\tṭi", "ጣ\tṭā", "ጤ\tṭé", "ጥ\tṭe/ṭ", "ጦ\tṭo",
+      "ጨ\tċe", "ጩ\tċu", "ጪ\tċi", "ጫ\tċā", "ጬ\tċé", "ጭ\tċe/ċ", "ጮ\tċo",
+      "ጰ\tp̣e", "ጱ\tp̣u", "ጲ\tp̣i", "ጳ\tp̣ā", "ጴ\tp̣é", "ጵ\tp̣e/p̣", "ጶ\tp̣o",
+      "ጸ\tṣe", "ጹ\tṣu", "ጺ\tṣi", "ጻ\tṣā", "ጼ\tṣé", "ጽ\tṣe/ṣ", "ጾ\tṣo",
+      "ፀ\tṡe", "ፁ\tṡu", "ፂ\tṡi", "ፃ\tṡā", "ፄ\tṡé", "ፅ\tṡe/ṡ", "ፆ\tṡo",
+      "ፈ\tfe", "ፉ\tfu", "ፊ\tfi", "ፋ\tfā", "ፌ\tfé", "ፍ\tfe/f", "ፎ\tfo",
+      "ፐ\tpe", "ፑ\tpu", "ፒ\tpi", "ፓ\tpā", "ፔ\tpé", "ፕ\tpe/p", "ፖ\tpo",
+      "ቨ\tve", "ቩ\tvu", "ቪ\tvi", "ቫ\tvā", "ቬ\tvé", "ቭ\tve/v", "ቮ\tvo"
+    ];
+
+    // const default_flashcardData = [
+    //   "ሀ\tha", "ሁ\thu", "ሂ\thi", "ሃ\thā", "ሄ\thé", "ህ\the/h", "ሆ\tho",
+    //   "ለ\tla", "ሉ\tlu", "ሊ\tli", "ላ\tlā", "ሌ\tlé", "ል\tle/l", "ሎ\tlo",
+    //   "ሐ\tḥa", "ሑ\tḥu", "ሒ\tḥi", "ሓ\tḥā", "ሔ\tḥé", "ሕ\tḥe/ḥ", "ሖ\tḥo",
+    //   "መ\tma", "ሙ\tmu", "ሚ\tmi", "ማ\tmā", "ሜ\tmé", "ም\tme/m", "ሞ\tmo",
+    //   "ሠ\tśa", "ሡ\tśu", "ሢ\tśi", "ሣ\tśā", "ሤ\tśé", "ሥ\tśe/ś", "ሦ\tśo",
+    //   "ረ\tra", "ሩ\tru", "ሪ\tri", "ራ\trā", "ሬ\tré", "ር\tre/r", "ሮ\tro",
+    //   "ሰ\tsa", "ሱ\tsu", "ሲ\tsi", "ሳ\tsā", "ሴ\tsé", "ስ\tse/s", "ሶ\tso",
+    //   "ሸ\tša", "ሹ\tšu", "ሺ\tši", "ሻ\tšā", "ሼ\tšé", "ሽ\tše/š", "ሾ\tšo",
+    //   "ቀ\tqa", "ቁ\tqu", "ቂ\tqi", "ቃ\tqā", "ቄ\tqé", "ቅ\tqe/q", "ቆ\tqo",
+    //   "ቐ\tq̄a", "ቑ\tq̄u", "ቒ\tq̄i", "ቓ\tq̄ā", "ቔ\tq̄é", "ቕ\tq̄e/q̄", "ቖ\tq̄o",
+    //   "በ\tba", "ቡ\tbu", "ቢ\tbi", "ባ\tbā", "ቤ\tbé", "ብ\tbe/b", "ቦ\tbo",
+    //   "ተ\tta", "ቱ\ttu", "ቲ\tti", "ታ\ttā", "ቴ\tté", "ት\tte/t", "ቶ\tto",
+    //   "ቸ\tča", "ቹ\tču", "ቺ\tči", "ቻ\tčā", "ቼ\tčé", "ች\tče/č", "ቾ\tčo",
+    //   "ኀ\tha", "ኁ\thu", "ኂ\thi", "ኃ\thā", "ኄ\thé", "ኅ\the/h", "ኆ\tho",
+    //   "ነ\tna", "ኑ\tnu", "ኒ\tni", "ና\tnā", "ኔ\tné", "ን\tne/n", "ኖ\tno",
+    //   "ኘ\tña", "ኙ\tñu", "ኚ\tñi", "ኛ\tñā", "ኜ\tñé", "ኝ\tñe/ñ", "ኞ\tño",
+    //   "አ\tʼa", "ኡ\tʼu", "ኢ\tʼi", "ኣ\tʼā", "ኤ\tʼé", "እ\tʼe", "ኦ\tʼo",
+    //   "ከ\tka", "ኩ\tku", "ኪ\tki", "ካ\tkā", "ኬ\tké", "ክ\tke/k", "ኮ\tko",
+    //   "ኸ\txa", "ኹ\txu", "ኺ\txi", "ኻ\txā", "ኼ\txé", "ኽ\txe/x", "ኾ\txo",
+    //   "ወ\twa", "ዉ\twu", "ዊ\twi", "ዋ\twā", "ዌ\twé", "ው\twe/w", "ዎ\two",
+    //   "ዐ\tʻa", "ዑ\tʻu", "ዒ\tʻi", "ዓ\tʻā", "ዔ\tʻé", "ዕ\tʻe", "ዖ\tʻo",
+    //   "ዘ\tza", "ዙ\tzu", "ዚ\tzi", "ዛ\tzā", "ዜ\tzé", "ዝ\tze/z", "ዞ\tzo",
+    //   "ዠ\tža", "ዡ\tžu", "ዢ\tži", "ዣ\tžā", "ዤ\tžé", "ዥ\tže/ž", "ዦ\tžo",
+    //   "የ\tya", "ዩ\tyu", "ዪ\tyi", "ያ\tyā", "ዬ\tyé", "ይ\tye/y", "ዮ\tyo",
+    //   "ደ\tda", "ዱ\tdu", "ዲ\tdi", "ዳ\tdā", "ዴ\tdé", "ድ\tde/d", "ዶ\tdo",
+    //   "ጀ\tǧa", "ጁ\tǧu", "ጂ\tǧi", "ጃ\tǧā", "ጄ\tǧé", "ጅ\tǧe/ǧ", "ጆ\tǧo",
+    //   "ገ\tga", "ጉ\tgu", "ጊ\tgi", "ጋ\tgā", "ጌ\tgé", "ግ\tge/g", "ጎ\tgo",
+    //   "ጠ\tṭa", "ጡ\tṭu", "ጢ\tṭi", "ጣ\tṭā", "ጤ\tṭé", "ጥ\tṭe/ṭ", "ጦ\tṭo",
+    //   "ጨ\tċa", "ጩ\tċu", "ጪ\tċi", "ጫ\tċā", "ጬ\tċé", "ጭ\tċe/ċ", "ጮ\tċo",
+    //   "ጰ\tp̣a", "ጱ\tp̣u", "ጲ\tp̣i", "ጳ\tp̣ā", "ጴ\tp̣é", "ጵ\tp̣e/p̣", "ጶ\tp̣o",
+    //   "ጸ\tṣa", "ጹ\tṣu", "ጺ\tṣi", "ጻ\tṣā", "ጼ\tṣé", "ጽ\tṣe/ṣ", "ጾ\tṣo",
+    //   "ፀ\tṡa", "ፁ\tṡu", "ፂ\tṡi", "ፃ\tṡā", "ፄ\tṡé", "ፅ\tṡe/ṡ", "ፆ\tṡo",
+    //   "ፈ\tfa", "ፉ\tfu", "ፊ\tfi", "ፋ\tfā", "ፌ\tfé", "ፍ\tfe/f", "ፎ\tfo",
+    //   "ፐ\tpa", "ፑ\tpu", "ፒ\tpi", "ፓ\tpā", "ፔ\tpé", "ፕ\tpe/p", "ፖ\tpo",
+    //   "ቨ\tva", "ቩ\tvu", "ቪ\tvi", "ቫ\tvā", "ቬ\tvé", "ቭ\tve/v", "ቮ\tvo"
+    // ];
+
+    let currentCardIndex = 0;
+    let isCardFlipped = false;
+
+    function loadCard(index) {
+      const [tigrinya, english] = flashcardData[index].split('\t');
+      
+      document.querySelector('.flashcard-front .letter').textContent = tigrinya;
+      document.querySelector('.flashcard-back .letter').textContent = tigrinya;
+      document.querySelector('.english-letter').textContent = english;
+
+      isCardFlipped = false;
+      document.querySelector('.flashcard').classList.remove('flipped');
+      document.querySelector('.difficulty-buttons').style.display = 'none';
+
+      // Check if audio file exists
+      const audio = new Audio(`/audio/${tigrinya}.ogg`);
+      audio.addEventListener('canplaythrough', () => {
+        document.getElementById('play-button-container').innerHTML = `
+          <button class="play-button" onclick="playAudio(event)">Play Sound</button>
+        `;
+      });
+      audio.addEventListener('error', () => {
+        document.getElementById('play-button-container').innerHTML = '';
+      });
+    }
+
+    function flipCard(event) {
+      if (event.target.classList.contains('play-button')) {
+        return; // Don't flip the card when the play button is clicked
+      }
+      isCardFlipped = !isCardFlipped;
+      document.querySelector('.flashcard').classList.toggle('flipped');
+      document.querySelector('.difficulty-buttons').style.display = isCardFlipped ? 'block' : 'none';
+    }
+
+    function nextCard() {
+      currentCardIndex = (currentCardIndex + 1) % flashcardData.length;
+      loadCard(currentCardIndex);
+      saveProgress();
+    }
+
+    function previousCard() {
+      currentCardIndex = (currentCardIndex - 1 + flashcardData.length) % flashcardData.length;
+      loadCard(currentCardIndex);
+      saveProgress();
+    }
+
+    function playAudio(event) {
+      event.stopPropagation(); // Prevent card flip when clicking the play button
+      const letter = flashcardData[currentCardIndex].split('\t')[0];
+      const audio = new Audio(`/audio/${letter}.ogg`);
+      audio.play();
+    }
+
+    function saveProgress() {
+      const progress = JSON.parse(localStorage.getItem('flashcardProgress')) || {};
+      progress[currentCardIndex] = {
+        lastReviewed: Date.now(),
+        nextReview: calculateNextReview(0), // Default to 'again'
+        easeFactor: 2.5,
+      };
+      localStorage.setItem('flashcardProgress', JSON.stringify(progress));
+    }
+
+    function loadProgress() {
+      const progress = JSON.parse(localStorage.getItem('flashcardProgress')) || {};
+      currentCardIndex = Object.keys(progress).find(key => 
+        progress[key].nextReview <= Date.now()
+      ) || 0;
+    }
+
+    function calculateNextReview(difficulty) {
+      const progress = JSON.parse(localStorage.getItem('flashcardProgress')) || {};
+      const cardProgress = progress[currentCardIndex] || { easeFactor: 2.5 };
+
+      let interval;
+      switch(difficulty) {
+        case 0: // Again
+          interval = 1;
+          cardProgress.easeFactor = Math.max(1.3, cardProgress.easeFactor - 0.2);
+          break;
+        case 1: // Hard
+          interval = 6;
+          cardProgress.easeFactor = Math.max(1.3, cardProgress.easeFactor - 0.15);
+          break;
+        case 2: // Good
+          interval = 1 * cardProgress.easeFactor;
+          break;
+        case 3: // Easy
+          interval = 4 * cardProgress.easeFactor;
+          cardProgress.easeFactor += 0.15;
+          break;
+        case 4: // I got it!
+          interval = 7 * cardProgress.easeFactor;
+          cardProgress.easeFactor += 0.3;
+          break;
+      }
+
+      cardProgress.nextReview = Date.now() + interval * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+      progress[currentCardIndex] = cardProgress;
+      localStorage.setItem('flashcardProgress', JSON.stringify(progress));
+
+      return cardProgress.nextReview;
+    }
+
+    function rateCard(difficulty) {
+      calculateNextReview(difficulty);
+      nextCard();
+    }
+
+    document.querySelector('.flashcard').addEventListener('click', flipCard);
+
+    // Initialize
+    loadProgress();
+    loadCard(currentCardIndex);
+  </script>
+</body></html>

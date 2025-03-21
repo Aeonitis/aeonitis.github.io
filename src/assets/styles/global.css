@@ -1,0 +1,289 @@
+/* Global CSS styles */
+
+/* Import Roboto font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* App container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header styles */
+.app-header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.app-logo {
+  height: 40px;
+  width: auto;
+}
+
+/* Navigation styles */
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.main-nav a:hover {
+  color: #1a73e8;
+}
+
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #1a73e8;
+  transition: width 0.2s;
+}
+
+.main-nav a:hover::after {
+  width: 100%;
+}
+
+/* Main content area */
+.app-content {
+  flex: 1;
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Footer styles */
+.app-footer {
+  background-color: #f0f0f0;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.support-links {
+  display: flex;
+  gap: 20px;
+}
+
+.support-links a {
+  color: #1a73e8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.support-links a:hover {
+  color: #0d47a1;
+  text-decoration: underline;
+}
+
+.version {
+  font-size: 12px;
+  color: #999;
+}
+
+/* Button styles */
+button {
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* React Flow specific styles */
+.react-flow__node {
+  font-family: 'Roboto', sans-serif;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 0 0 2px #1a73e8;
+}
+
+.react-flow__controls {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  border-radius: 0 !important;
+  border: none !important;
+  background-color: white;
+  color: #666;
+  width: 30px;
+  height: 30px;
+}
+
+/* Form styles */
+input, textarea {
+  font-family: 'Roboto', sans-serif;
+  transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus {
+  border-color: #1a73e8;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .app-content {
+    padding: 15px;
+  }
+  
+  .app-footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .support-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .main-nav ul {
+    gap: 15px;
+  }
+}
+
+/* Unified node styling */
+.node-wrapper {
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.node-wrapper:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+/* Ensure buttons remain contained within the node */
+.node-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+/* Make text in nodes selectable */
+.node-content {
+  user-select: text;
+  width: 100%;
+  text-align: center;
+}
+
+/* React Flow specific improvements */
+.react-flow__node {
+  padding: 0 !important; /* Ensure no extra padding disrupts our node design */
+}
+
+.react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: #1a73e8 !important;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2 !important;
+  stroke: #777 !important;
+}
+
+.react-flow__edge-path:hover {
+  stroke: #1a73e8 !important;
+  stroke-width: 3 !important;
+}
+
+/* Layout improvements */
+.sidebar-tools {
+  flex-grow: 1;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar-customization {
+  transition: all 0.3s ease;
+  max-width: 300px;
+  z-index: 10;
+}
+
+/* Ensure argument map takes full available space */
+.argument-map-container {
+  position: relative;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* React Flow Controls positioning */
+.react-flow__controls {
+  bottom: 10px;
+  right: 10px;
+  top: auto;
+}
+
+/* Node control buttons hover effects */
+.node-controls button:hover {
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}

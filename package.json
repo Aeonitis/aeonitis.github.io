@@ -1,19 +1,17 @@
 {
-  "name": "frezgi",
+  "name": "vite-vue-starter",
   "version": "0.0.0",
-  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "serve": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "latest"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.2.1",
-    "vite-plugin-vue-devtools": "^7.7.2"
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.2.2"
   }
 }

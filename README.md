@@ -1,29 +1,18 @@
-# Frezgi
+# Vite Vue Starter
 
-This template should help get you started developing with Vue 3 in Vite.
+This is a project template using [Vite](https://vitejs.dev/). It requires [Node.js](https://nodejs.org) version 18+ or 20+.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+To start:
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
-```
 
-### Compile and Minify for Production
+# if using yarn:
+yarn
+yarn dev
 
-```sh
-npm run build
+# if using pnpm:
+pnpm install
+pnpm run dev
 ```
